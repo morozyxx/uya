@@ -1,0 +1,18 @@
+[project]
+name = "uyabackend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiomysql>=0.3.2",
+    "bcrypt>=5.0.0",
+    "cryptography>=50.0.2",
+    "fastapi>=0.146.0",
+    "greenlet>=3.5.6",
+    "pydantic-settings>=2.16.0",
+    "pydantic[email]>=2.14.1",
+    "pyjwt>=2.15.1",
+    "sqlalchemy>=2.1.5",
+    "uvicorn>=0.54.0",
+]
