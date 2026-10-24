@@ -1,8 +1,8 @@
 import bcrypt, jwt
 from datetime import datetime, timedelta
 
-from schemas.users import TokenSchema
-from config import api_settings
+from src.schemas.users import TokenSchema
+from src.config import api_settings
 
 def hash_pwd(password: str) -> str:
     return bcrypt.hashpw(
@@ -43,5 +43,4 @@ def decode_token(
     )
 
     return decoded_data if decoded_data else None
-
 

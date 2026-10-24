@@ -3,11 +3,11 @@ from fastapi import APIRouter, Depends, Cookie, HTTPException, status, Response
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.posts import PostsORM
-from models.users import UsersORM
-from schemas.posts import PostSchema, NewPostSchema, DeletePostSchema, AllPostsResponseSchema
-from db import get_session
-from helper import decode_token
+from src.models.posts import PostsORM
+from src.models.users import UsersORM
+from src.schemas.posts import PostSchema, NewPostSchema, DeletePostSchema, AllPostsResponseSchema
+from src.db import get_session
+from src.helper import decode_token
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -148,4 +148,3 @@ async def delete_post(
 
     await session.execute(delete_query)
     await session.commit()
-

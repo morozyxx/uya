@@ -3,11 +3,11 @@ from fastapi.params import Cookie
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.posts import PostsORM
-from schemas.users import SignUpSchema, SingInSchema, AuthResponseSchema, EditProfileSchema
-from db import get_session
-from models.users import UsersORM
-from helper import hash_pwd, verify_pwd, create_token, decode_token
+from src.models.posts import PostsORM
+from src.schemas.users import SignUpSchema, SingInSchema, AuthResponseSchema, EditProfileSchema
+from src.db import get_session
+from src.models.users import UsersORM
+from src.helper import hash_pwd, verify_pwd, create_token, decode_token
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 

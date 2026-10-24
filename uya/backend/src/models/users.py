@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, VARCHAR, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from db import Base
+from src.db import Base
 
 class UsersORM(Base):
     __tablename__ = "users"
