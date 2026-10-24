@@ -10,10 +10,10 @@ async def api_lifespan(app):
     await init_db()
     yield
 
-app = FastAPI(lifespan=api_lifespan)
+app = FastAPI(lifespan=api_lifespan, prefix="/api")
 app.add_middleware(
     CORSMiddleware
-    , allow_origins=["http://localhost:3000"]
+    , allow_origins=["https://uya-six.vercel.app]
     , allow_credentials=True
     , allow_methods=["POST", "PATCH", "GET", "OPTIONS", "DELETE", "PUT"]
     , allow_headers=["*"]
