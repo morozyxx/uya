@@ -13,6 +13,7 @@ api_settings = ApiSettings()
 
 
 class DatabaseSettings(BaseSettings):
+    DB_URL: str = f"{os.getenv("DB_URL")}"
     DB_PROTOCOL: str = os.getenv("DB_PROTOCOL")
     DB_HOST: str = os.getenv("DB_HOST")
     DB_PORT: int = int(os.getenv("DB_PORT"))

@@ -4,7 +4,7 @@ from sqlalchemy.orm import declarative_base
 from config import database_settings
 
 engine = create_async_engine(
-    url=f"{database_settings.DB_PROTOCOL}://{database_settings.DB_USER}:{database_settings.DB_PASSWORD}@{database_settings.DB_HOST}:{database_settings.DB_PORT}/{database_settings.DB_NAME}"
+    url=database_settings.DB_URL
     , echo=database_settings.ECHO
 )
 
