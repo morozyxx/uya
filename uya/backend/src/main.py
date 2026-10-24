@@ -13,7 +13,7 @@ async def api_lifespan(app):
 app = FastAPI(lifespan=api_lifespan, prefix="/api")
 app.add_middleware(
     CORSMiddleware
-    , allow_origins=["https://uya-six.vercel.app]
+    , allow_origins=["https://uya-six.vercel.app"]
     , allow_credentials=True
     , allow_methods=["POST", "PATCH", "GET", "OPTIONS", "DELETE", "PUT"]
     , allow_headers=["*"]
