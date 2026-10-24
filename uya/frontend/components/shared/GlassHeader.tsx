@@ -21,6 +21,7 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                             className="h-11 w-11 rounded-xl object-cover sm:h-14 sm:w-14"
                             src="/logo.png"
                             alt="Uya logo"
+                            unoptimized
                             priority
                         />
                     </div>
