@@ -12,7 +12,7 @@ export default function LogoutButton() {
         setError("");
 
         try {
-            const response = await fetch("http://localhost:8000/auth/logout", {
+            const response = await fetch("/api/auth/logout", {
                 method: "POST",
                 credentials: "include",
             });

@@ -15,7 +15,7 @@ type ApiErrorResponse = {
     message?: unknown;
 };
 
-const authApiUrl = "http://localhost:8000/auth";
+const authApiUrl = "/api/auth";
 
 async function getErrorMessage(response: Response, fallback: string): Promise<string> {
     try {

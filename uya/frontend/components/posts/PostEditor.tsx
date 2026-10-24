@@ -7,7 +7,7 @@ import type { SyntheticEvent } from "react";
 import Header_auth from "@/components/shared/Header_auth";
 import { isPost, type ApiErrorBody, type PostInput } from "@/components/posts/PostTypes";
 
-const postsApiUrl = "http://localhost:8000/posts";
+const postsApiUrl = "/api/posts";
 const popularPlatforms = [
     "YouTube",
     "Instagram",

@@ -15,8 +15,8 @@ type ApiErrorBody = {
 };
 
 const authEndpoints = {
-    "sign-in": "http://localhost:8000/auth/sign_in",
-    "sign-up": "http://localhost:8000/auth/sign_up",
+    "sign-in": "/api/auth/sign_in",
+    "sign-up": "/api/auth/sign_up",
 } as const;
 
 export default function AuthForm({ mode }: AuthFormProps) {

@@ -6,7 +6,7 @@ import Header_auth from "@/components/shared/Header_auth";
 import PostImage from "@/components/posts/PostImage";
 import { isPost, type Post } from "@/components/posts/PostTypes";
 
-const postsEndpoint = "http://localhost:8000/posts/all";
+const postsEndpoint = "/api/posts/all";
 
 export default function PostsDashboard() {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -64,7 +64,7 @@ export default function PostsDashboard() {
         setDeletingPostId(post.id);
 
         try {
-            const response = await fetch("http://localhost:8000/posts/delete", {
+            const response = await fetch("/api/posts/delete", {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Backend API
+
+The frontend sends API requests to `/api` and Next.js rewrites them to the backend.
+For local development, the backend URL defaults to `http://localhost:8000`.
+For Vercel, set the project root directory to `frontend` and set `BACKEND_URL`
+to the public HTTPS base URL of the separately deployed backend (without a
+trailing slash). Configure the backend's `DOMAIN`, `PORT`, `JWT_SECRET`, and
+`DB_*` environment variables on its hosting provider.
+
 ## Getting Started
 
 First, run the development server:

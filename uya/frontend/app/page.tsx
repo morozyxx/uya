@@ -43,7 +43,7 @@ export default function Home() {
 
         async function checkAuth() {
             try {
-                const response = await fetch("http://localhost:8000/auth/me", {
+                const response = await fetch("/api/auth/me", {
                     method: "GET",
                     credentials: "include",
                     signal: controller.signal,
@@ -60,7 +60,7 @@ export default function Home() {
 
         async function loadPublicPosts() {
             try {
-                const response = await fetch("http://localhost:8000/posts/", {
+                const response = await fetch("/api/posts/", {
                     method: "GET",
                     signal: controller.signal,
                 });
