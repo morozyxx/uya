@@ -1,5 +1,4 @@
 import Image from "next/image";
-import MagnifyingGlass from "@/public/magnifying-glass-icon.svg";
 
 type SearchBarProps = {
     value: string;
@@ -12,7 +11,7 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
             <Image
                 aria-hidden="true"
                 className="h-6 w-6 shrink-0"
-                src={MagnifyingGlass}
+                src="/magnifying-glass-icon.svg"
                 alt=""
             />
             <input

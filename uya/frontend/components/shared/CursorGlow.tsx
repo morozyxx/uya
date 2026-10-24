@@ -7,9 +7,13 @@ export default function CursorGlow() {
     const cursorRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const canvas = canvasRef.current;
+        const canvasElement = canvasRef.current;
         const cursor = cursorRef.current;
-        if (!canvas || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        if (!canvasElement) {
+            return;
+        }
+        const canvas: HTMLCanvasElement = canvasElement;
+        if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
             return;
         }
 

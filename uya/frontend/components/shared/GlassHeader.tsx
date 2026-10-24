@@ -1,11 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import Logo from "@/public/logo.png";
-import Info from "@/public/info-icon.svg";
-import Login from "@/public/login-icon.svg";
-import Profile from "@/public/profile-icon.svg";
-import PostIcon from "@/public/post-icon.svg";
 import LogoutButton from "@/components/auth/LogoutButton";
 
 type GlassHeaderProps = {
@@ -24,7 +19,7 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                     <div className="overflow-hidden rounded-2xl border border-white/70 bg-slate-950 p-1.5 shadow-[0_8px_24px_rgba(24,42,69,0.24)] ring-1 ring-slate-500/10">
                         <Image
                             className="h-11 w-11 rounded-xl object-cover sm:h-14 sm:w-14"
-                            src={Logo}
+                            src="/logo.png"
                             alt="Uya logo"
                             priority
                         />
@@ -52,7 +47,7 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                             >
                                 <Image
                                     className="h-5 w-5 brightness-0 opacity-75"
-                                    src={PostIcon}
+                                    src="/post-icon.svg"
                                     alt=""
                                 />
                             </Link>
@@ -62,7 +57,7 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                                 title="Edit profile"
                                 className="top-nav-control grid"
                             >
-                                <Image className="h-5 w-5 brightness-0 opacity-75" src={Profile} alt="Profile" />
+                                <Image className="h-5 w-5 brightness-0 opacity-75" src="/profile-icon.svg" alt="Profile" />
                             </Link>
                             <LogoutButton />
                         </div>
@@ -72,7 +67,7 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                                 className="top-nav-control grid"
                                 title="About Uya"
                             >
-                                <Image className="h-5 w-5 brightness-0 opacity-75" src={Info} alt="About" />
+                                <Image className="h-5 w-5 brightness-0 opacity-75" src="/info-icon.svg" alt="About" />
                             </span>
                             <Link
                                 href="/sign-in"
@@ -80,7 +75,7 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                                 title="Sign in"
                                 className="top-nav-control grid"
                             >
-                                <Image className="h-5 w-5 brightness-0 opacity-75" src={Login} alt="Sign in" />
+                                <Image className="h-5 w-5 brightness-0 opacity-75" src="/login-icon.svg" alt="Sign in" />
                             </Link>
                         </>
                     )}

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import LogoutIcon from "@/public/logout-icon.svg";
 
 export default function LogoutButton() {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -41,7 +40,7 @@ export default function LogoutButton() {
                 aria-label={isLoggingOut ? "Signing out" : "Logout"}
                 title={isLoggingOut ? "Signing out" : "Logout"}
             >
-                <Image className="h-5 w-5" src={LogoutIcon} alt="" />
+                <Image className="h-5 w-5" src="/logout-icon.svg" alt="" />
             </button>
             {error && (
                 <span
