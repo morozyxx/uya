@@ -165,7 +165,7 @@ async def me(
     })
 
 
-@router.post("/user_profile",  response_model=UserInfoResponseSchema)
+@router.post("/user_profile",  response_model=UserProfileResponseSchema)
 async def get_user_info(
         payload: UserInfoSchema
         , session: AsyncSession = Depends(get_session)
@@ -198,7 +198,7 @@ async def get_user_info(
         }))
 
     # Return validated result
-    return UserInfoResponseSchema.model_validate({
+    return UserProfileResponseSchema.model_validate({
         "username": user.username
         , "posts": posts
     })
