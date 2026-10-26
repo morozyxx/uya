@@ -75,7 +75,7 @@ async def sing_in(
         key = "access_token"
         , value = token.access_token
         , httponly = True
-        # , secure = True
+        , secure = True
         , samesite = "lax"
         , domain = None
     )
@@ -129,13 +129,13 @@ async def edit_profile(
         , domain = None
     )
 
-    token = create_token(data={"username": user.username, "id": user.id})
+    token = create_token(data={"username": payload.username, "email": payload.email,"id": user.id})
 
     response.set_cookie(
         key="access_token"
         , value=token.access_token
         , httponly=True
-        # , secure = True
+        , secure = True
         , samesite="lax"
         , domain=None
     )
