@@ -1,6 +1,8 @@
 from typing import List
 from pydantic import BaseModel, EmailStr, Field
 
+from src.schemas.posts import PostSchema
+
 class SignUpSchema(BaseModel):
     username: str = Field(..., description="User`s username")
     password: str = Field(..., description="User`s password")
