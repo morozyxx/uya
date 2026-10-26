@@ -4,7 +4,7 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.posts import PostsORM
-from src.schemas.users import SignUpSchema, SingInSchema, AuthResponseSchema, EditProfileSchema, UserInfoSchema, UserInfoResponseSchema
+from src.schemas.users import SignUpSchema, SignInSchema, AuthResponseSchema, EditProfileSchema, UserInfoSchema, UserInfoResponseSchema
 from src.schemas.posts import PostSchema
 from src.db import get_session
 from src.models.users import UsersORM
