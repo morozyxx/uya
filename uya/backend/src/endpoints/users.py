@@ -167,7 +167,7 @@ async def me(
 
 @router.post("/user_profile",  response_model=UserProfileResponseSchema)
 async def get_user_info(
-        payload: UserInfoSchema
+        payload: UserProfileSchema
         , session: AsyncSession = Depends(get_session)
 ):
     # Searching user in db
