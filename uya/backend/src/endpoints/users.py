@@ -184,7 +184,7 @@ async def get_user_info(
     # Searching given user posts
     search_posts_query = select(PostsORM).filter_by(user_id=user.id)
     search_posts_ex = await session.execute(search_posts_query)
-    db_posts = search_posts_ex.scalar_one_or_none()
+    db_posts = search_posts_ex.scalars().all()
 
     posts = []
     for post in db_posts:
