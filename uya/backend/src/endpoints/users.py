@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.posts import PostsORM
 from src.schemas.users import SignUpSchema, SingInSchema, AuthResponseSchema, EditProfileSchema, UserInfoSchema, UserInfoResponseSchema
+from src.schemas.posts import PostSchema
 from src.db import get_session
 from src.models.users import UsersORM
 from src.helper import hash_pwd, verify_pwd, create_token, decode_token
@@ -175,7 +176,7 @@ async def get_user_info(
     user = search_user_ex.scalar_one_or_none()
 
     if not user:
-        raise HTTPExceptnio(
+        raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND
             , detail="User not found."
         )
