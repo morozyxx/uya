@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import Header_auth from "@/components/shared/Header_auth";
 import Header_not_auth from "@/components/shared/Header_not_auth";
 import SearchBar from "@/components/shared/SearchBar";
@@ -195,9 +196,12 @@ export default function Home() {
                                         <span className="rounded-full border border-violet-300/20 bg-violet-300/[0.08] px-2.5 py-1 text-violet-200">
                                             {post.platform}
                                         </span>
-                                        <span className="truncate text-slate-300">
+                                        <Link
+                                            className="truncate text-slate-300 hover:text-violet-200"
+                                            href={`/profile/${encodeURIComponent(post.username)}`}
+                                        >
                                             @{post.username}
-                                        </span>
+                                        </Link>
                                     </div>
                                     <h3 className="mt-4 text-lg leading-7 text-white">
                                         {post.title}

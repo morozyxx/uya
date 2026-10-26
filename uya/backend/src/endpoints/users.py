@@ -4,7 +4,7 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.posts import PostsORM
-from src.schemas.users import SignUpSchema, SingInSchema, AuthResponseSchema, EditProfileSchema
+from src.schemas.users import SignUpSchema, SingInSchema, AuthResponseSchema, EditProfileSchema, UserInfoSchema, UserInfoResponseSchema
 from src.db import get_session
 from src.models.users import UsersORM
 from src.helper import hash_pwd, verify_pwd, create_token, decode_token
@@ -42,7 +42,7 @@ async def sing_up(
 @router.post("/sign_in")
 async def sing_in(
         response: Response
-        , payload: SingInSchema
+        , payload: SingnInSchema
         , session: AsyncSession = Depends(get_session)
 ):
     query = select(UsersORM).filter_by(username=payload.username)
@@ -161,6 +161,45 @@ async def me(
         "username": res.username
         , "email": res.email
         , "user_id": res.id
+    })
+
+
+@router.post("/user_profile",  response_model=UserInfoResponseSchema)
+async def get_user_info(
+        payload: UserInfoSchema
+        , session: AsyncSession = Depends(get_session)
+):
+    # Searching user in db
+    search_user_query = select(UsersORM).filter_by(username=payload.username)
+    search_user_ex = await session.execute(search_user_query)
+    user = search_user_ex.scalar_one_or_none()
+
+    if not user:
+        raise HTTPExceptnio(
+            status_code=status.HTTP_404_NOT_FOUND
+            , detail="User not found."
+        )
+
+    # Searching given user posts
+    search_posts_query = select(PostsORM).filter_by(user_id=user.id)
+    search_posts_ex = await session.execute(search_posts_query)
+    db_posts = search_posts_ex.scalar_one_or_none()
+
+    posts = []
+    for post in db_posts:
+        posts.append(PostSchema.model_validate({
+            "id": post.id
+            , "title": post.title
+            , "description": post.description
+            , "platform": post.platform
+            , "link": post.link
+            , "image": post.image
+        }))
+
+    # Return validated result
+    return UserInfoResponseSchema.model_validate({
+        "username": user.username
+        , "posts": posts
     })
 
 
