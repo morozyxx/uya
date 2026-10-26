@@ -43,7 +43,7 @@ async def sing_up(
 @router.post("/sign_in")
 async def sing_in(
         response: Response
-        , payload: SingnInSchema
+        , payload: SignInSchema
         , session: AsyncSession = Depends(get_session)
 ):
     query = select(UsersORM).filter_by(username=payload.username)
