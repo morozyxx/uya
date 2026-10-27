@@ -4,7 +4,7 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.posts import PostsORM
-from src.schemas.users import SignUpSchema, SingInSchema, AuthResponseSchema, EditProfileSchema, UserInfoSchema, UserInfoResponseSchema
+from src.schemas.users import SignUpSchema, SignInSchema, AuthResponseSchema, EditProfileSchema, UserProfileSchema, UserProfileResponseSchema
 from src.schemas.posts import PostSchema
 from src.db import get_session
 from src.models.users import UsersORM
@@ -43,7 +43,7 @@ async def sing_up(
 @router.post("/sign_in")
 async def sing_in(
         response: Response
-        , payload: SingnInSchema
+        , payload: SignInSchema
         , session: AsyncSession = Depends(get_session)
 ):
     query = select(UsersORM).filter_by(username=payload.username)
@@ -165,9 +165,9 @@ async def me(
     })
 
 
-@router.post("/user_profile",  response_model=UserInfoResponseSchema)
+@router.post("/user_profile",  response_model=UserProfileResponseSchema)
 async def get_user_info(
-        payload: UserInfoSchema
+        payload: UserProfileSchema
         , session: AsyncSession = Depends(get_session)
 ):
     # Searching user in db
@@ -182,9 +182,9 @@ async def get_user_info(
         )
 
     # Searching given user posts
-    search_posts_query = select(PostsORM).filter_by(user_id=user.id)
+    search_posts_query = select(PostsORM).filter_by(user_id=user.id).order_by(PostsORM.id.desc())
     search_posts_ex = await session.execute(search_posts_query)
-    db_posts = search_posts_ex.scalar_one_or_none()
+    db_posts = search_posts_ex.scalars().all()
 
     posts = []
     for post in db_posts:
@@ -198,7 +198,7 @@ async def get_user_info(
         }))
 
     # Return validated result
-    return UserInfoResponseSchema.model_validate({
+    return UserProfileResponseSchema.model_validate({
         "username": user.username
         , "posts": posts
     })
