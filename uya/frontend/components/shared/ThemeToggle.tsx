@@ -4,7 +4,11 @@ import { useEffect } from "react";
 
 const themeStorageKey = "uya-theme";
 
-export default function ThemeToggle() {
+type ThemeToggleProps = {
+    showLabel?: boolean;
+};
+
+export default function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
     useEffect(() => {
         if (window.localStorage.getItem(themeStorageKey) === "dark") {
             document.documentElement.dataset.theme = "dark";
@@ -22,7 +26,7 @@ export default function ThemeToggle() {
     return (
         <button
             type="button"
-            className="top-nav-control grid"
+            className={showLabel ? "mobile-theme-toggle" : "top-nav-control grid"}
             onClick={toggleTheme}
             aria-label="Toggle color theme"
             title="Toggle color theme"
@@ -52,6 +56,7 @@ export default function ThemeToggle() {
             >
                 <path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.5 8.5 0 1 0 20.2 15.4Z" />
             </svg>
+            {showLabel && <span>Change color theme</span>}
         </button>
     );
 }
