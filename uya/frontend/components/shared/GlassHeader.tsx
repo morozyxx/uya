@@ -46,7 +46,7 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                                 href="/posts"
                                 aria-label="Publication center"
                                 title="Publication center"
-                                className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-violet-300/30 bg-violet-300/10 px-3 text-xs font-medium text-violet-100 transition hover:border-violet-200/50 hover:bg-violet-300/20 sm:h-11 sm:px-4"
+                                className="publication-center-link inline-flex h-10 items-center justify-center gap-2 rounded-full border border-violet-300/30 bg-violet-300/10 px-3 text-xs font-medium text-violet-100 transition hover:border-violet-200/50 hover:bg-violet-300/20 sm:h-11 sm:px-4"
                             >
                                 <Image
                                     className="h-4 w-4 brightness-0 opacity-75"
