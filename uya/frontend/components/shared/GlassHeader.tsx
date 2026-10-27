@@ -42,15 +42,17 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                             </span>
                             <Link
                                 href="/posts"
-                                aria-label="My posts"
-                                title="My posts"
-                                className="top-nav-control hidden sm:grid"
+                                aria-label="Publication center"
+                                title="Publication center"
+                                className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-violet-300/30 bg-violet-300/10 px-3 text-xs font-medium text-violet-100 transition hover:border-violet-200/50 hover:bg-violet-300/20 sm:h-11 sm:px-4"
                             >
                                 <Image
-                                    className="h-5 w-5 brightness-0 opacity-75"
+                                    className="h-4 w-4 brightness-0 opacity-75"
                                     src="/post-icon.svg"
                                     alt=""
                                 />
+                                <span className="sm:hidden">Studio</span>
+                                <span className="hidden sm:inline">Publication center</span>
                             </Link>
                             <Link
                                 href="/profile/edit"
