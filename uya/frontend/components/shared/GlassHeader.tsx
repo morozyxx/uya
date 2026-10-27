@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import LogoutButton from "@/components/auth/LogoutButton";
+import ThemeToggle from "@/components/shared/ThemeToggle";
 
 type GlassHeaderProps = {
     authenticated: boolean;
@@ -35,6 +36,7 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                     </div>
                 </Link>
                 <div className="top-nav-actions flex shrink-0 items-center gap-2">
+                    <ThemeToggle />
                     {authenticated ? (
                         <div className="flex items-center gap-2 rounded-full border border-white/[0.07] bg-white/[0.025] py-1.5 pl-3 pr-1.5 sm:gap-3 sm:pl-4">
                             <span className="hidden text-xs text-slate-200 sm:inline">
