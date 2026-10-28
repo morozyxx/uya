@@ -31,6 +31,8 @@ export default function EditProfileForm() {
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
+    const [initialUsername, setInitialUsername] = useState("");
+    const [initialEmail, setInitialEmail] = useState("");
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [isLoadingProfile, setIsLoadingProfile] = useState(true);
@@ -72,6 +74,8 @@ export default function EditProfileForm() {
 
                 setUsername(profile.username);
                 setEmail(profile.email);
+                setInitialUsername(profile.username);
+                setInitialEmail(profile.email);
             } catch {
                 if (!controller.signal.aborted) {
                     setError("Unable to reach the server. Please try again.");
@@ -89,24 +93,44 @@ export default function EditProfileForm() {
         event.preventDefault();
         setError("");
 
-        if (newPassword.length < 8) {
+        if (newPassword && newPassword.length < 8) {
             setError("Your new password must be at least 8 characters long.");
+            return;
+        }
+
+        if (Boolean(oldPassword) !== Boolean(newPassword)) {
+            setError("Enter both your current and new password to change your password.");
             return;
         }
 
         setIsSaving(true);
 
         try {
+            const body: {
+                username?: string;
+                email?: string;
+                old_password?: string;
+                new_password?: string;
+            } = {};
+            const nextUsername = username.trim();
+            const nextEmail = email.trim();
+
+            if (nextUsername && nextUsername !== initialUsername) {
+                body.username = nextUsername;
+            }
+            if (nextEmail && nextEmail !== initialEmail) {
+                body.email = nextEmail;
+            }
+            if (oldPassword && newPassword) {
+                body.old_password = oldPassword;
+                body.new_password = newPassword;
+            }
+
             const response = await fetch(`${authApiUrl}/edit`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({
-                    username,
-                    old_password: oldPassword,
-                    new_password: newPassword,
-                    email,
-                }),
+                body: JSON.stringify(body),
             });
 
             if (response.status === 200) {
@@ -203,7 +227,7 @@ export default function EditProfileForm() {
                         Edit your profile
                     </h1>
                     <p className="mt-3 text-sm leading-6 text-slate-300">
-                        Update your account details and confirm the changes with your current password.
+                        Leave fields blank to keep their current values. Enter both passwords only when changing your password.
                     </p>
                 </div>
 
@@ -228,7 +252,6 @@ export default function EditProfileForm() {
                                     type="text"
                                     value={username}
                                     onChange={(event) => setUsername(event.target.value)}
-                                    required
                                 />
                             </label>
 
@@ -241,7 +264,6 @@ export default function EditProfileForm() {
                                     type="email"
                                     value={email}
                                     onChange={(event) => setEmail(event.target.value)}
-                                    required
                                 />
                             </label>
 
@@ -254,7 +276,6 @@ export default function EditProfileForm() {
                                     type="password"
                                     value={oldPassword}
                                     onChange={(event) => setOldPassword(event.target.value)}
-                                    required
                                 />
                             </label>
 
@@ -268,7 +289,6 @@ export default function EditProfileForm() {
                                     value={newPassword}
                                     onChange={(event) => setNewPassword(event.target.value)}
                                     minLength={8}
-                                    required
                                 />
                                 <span className="block text-[11px] text-slate-400">
                                     Use at least 8 characters.

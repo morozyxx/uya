@@ -1,15 +1,21 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 import LogoutButton from "@/components/auth/LogoutButton";
+import ThemeToggle from "@/components/shared/ThemeToggle";
 
 type GlassHeaderProps = {
     authenticated: boolean;
 };
 
 export default function GlassHeader({ authenticated }: GlassHeaderProps) {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
     return (
-        <header className="glass-panel glass-header relative isolate mx-auto mt-5 w-[calc(100%-2rem)] max-w-6xl overflow-hidden rounded-[1.75rem] px-4 py-3 sm:mt-8 sm:px-6 sm:py-4">
+        <header className={`glass-panel glass-header relative isolate mx-auto mt-5 w-[calc(100%-2rem)] max-w-6xl overflow-hidden px-4 py-3 sm:mt-8 sm:rounded-[1.75rem] sm:px-6 sm:py-4 ${isMobileMenuOpen ? "mobile-menu-open" : ""}`}>
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_12%_0%,rgba(255,255,255,0.78),transparent_48%),linear-gradient(135deg,rgba(255,255,255,0.28),transparent_58%)]"
@@ -34,7 +40,8 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                         </p>
                     </div>
                 </Link>
-                <div className="top-nav-actions flex shrink-0 items-center gap-2">
+                <div className="top-nav-actions hidden shrink-0 items-center gap-2 md:flex">
+                    <ThemeToggle />
                     {authenticated ? (
                         <div className="flex items-center gap-2 rounded-full border border-white/[0.07] bg-white/[0.025] py-1.5 pl-3 pr-1.5 sm:gap-3 sm:pl-4">
                             <span className="hidden text-xs text-slate-200 sm:inline">
@@ -42,15 +49,16 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                             </span>
                             <Link
                                 href="/posts"
-                                aria-label="My posts"
-                                title="My posts"
-                                className="top-nav-control hidden sm:grid"
+                                aria-label="Publication center"
+                                title="Publication center"
+                                className="publication-center-link inline-flex h-10 items-center justify-center gap-2 rounded-full border border-violet-300/30 bg-violet-300/10 px-3 text-xs font-medium text-violet-100 transition hover:border-violet-200/50 hover:bg-violet-300/20 sm:h-11 sm:px-4"
                             >
                                 <Image
-                                    className="h-5 w-5 brightness-0 opacity-75"
+                                    className="h-4 w-4 brightness-0 opacity-75"
                                     src="/post-icon.svg"
                                     alt=""
                                 />
+                                <span>Publication center</span>
                             </Link>
                             <Link
                                 href="/profile/edit"
@@ -58,17 +66,14 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                                 title="Edit profile"
                                 className="top-nav-control grid"
                             >
-                                <Image className="h-5 w-5 brightness-0 opacity-75" src="/profile-icon.svg" alt="Profile" />
+                                <Image className="h-5 w-5 brightness-0 opacity-75" src="/profile-icon.svg" alt="" />
                             </Link>
                             <LogoutButton />
                         </div>
                     ) : (
                         <>
-                            <span
-                                className="top-nav-control grid"
-                                title="About Uya"
-                            >
-                                <Image className="h-5 w-5 brightness-0 opacity-75" src="/info-icon.svg" alt="About" />
+                            <span className="top-nav-control grid" title="About Uya">
+                                <Image className="h-5 w-5 brightness-0 opacity-75" src="/info-icon.svg" alt="" />
                             </span>
                             <Link
                                 href="/sign-in"
@@ -76,11 +81,63 @@ export default function GlassHeader({ authenticated }: GlassHeaderProps) {
                                 title="Sign in"
                                 className="top-nav-control grid"
                             >
-                                <Image className="h-5 w-5 brightness-0 opacity-75" src="/login-icon.svg" alt="Sign in" />
+                                <Image className="h-5 w-5 brightness-0 opacity-75" src="/login-icon.svg" alt="" />
                             </Link>
                         </>
                     )}
                 </div>
+                <button
+                    type="button"
+                    className="mobile-menu-toggle top-nav-control grid md:hidden"
+                    aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                    aria-expanded={isMobileMenuOpen}
+                    onClick={() => setIsMobileMenuOpen((open) => !open)}
+                >
+                    <span className="mobile-menu-dots" aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                    </span>
+                    <span className="mobile-menu-close" aria-hidden="true" />
+                </button>
+            </div>
+
+            <div
+                className={`mobile-nav-panel md:hidden ${isMobileMenuOpen ? "is-open" : ""}`}
+                aria-hidden={!isMobileMenuOpen}
+                inert={!isMobileMenuOpen}
+            >
+                <nav className="mobile-nav-items" aria-label="Main menu">
+                    <div className="mobile-nav-item">
+                        <ThemeToggle showLabel />
+                    </div>
+                    {authenticated ? (
+                        <>
+                            <Link className="mobile-nav-item" href="/posts" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Image src="/post-icon.svg" alt="" width={20} height={20} />
+                                <span>Publication center</span>
+                            </Link>
+                            <Link className="mobile-nav-item" href="/profile/edit" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Image src="/profile-icon.svg" alt="" width={20} height={20} />
+                                <span>Edit profile</span>
+                            </Link>
+                            <div className="mobile-nav-item">
+                                <LogoutButton showLabel />
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="mobile-nav-item" aria-label="About Uya">
+                                <Image src="/info-icon.svg" alt="" width={20} height={20} />
+                                <span>About Uya</span>
+                            </div>
+                            <Link className="mobile-nav-item" href="/sign-in" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Image src="/login-icon.svg" alt="" width={20} height={20} />
+                                <span>Sign in</span>
+                            </Link>
+                        </>
+                    )}
+                </nav>
             </div>
         </header>
     );

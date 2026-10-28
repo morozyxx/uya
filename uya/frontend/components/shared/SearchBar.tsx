@@ -22,9 +22,6 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
                 placeholder="Search creators and announcements"
                 aria-label="Search creators and announcements"
             />
-            <span className="hidden rounded border border-white/15 px-1.5 py-0.5 text-[10px] text-slate-400 sm:inline">
-                ⌕
-            </span>
         </label>
     );
 }
