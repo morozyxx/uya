@@ -13,10 +13,10 @@ class SignInSchema(BaseModel):
     password: str = Field(..., description="User`s password")
 
 class EditProfileSchema(BaseModel):
-    username: str = Field(..., description="User`s username")
-    old_password: str = Field(..., description="User`s old password")
-    new_password: str = Field(..., description="User`s new password")
-    email: EmailStr = Field(..., description="User`s email")
+    username: str | None = None
+    old_password: str | None = None
+    new_password: str | None = None
+    email: EmailStr | None = None
 
 class AuthResponseSchema(BaseModel):
     username: str = Field(..., description="User`s username")
@@ -33,4 +33,3 @@ class UserProfileResponseSchema(BaseModel):
 class TokenSchema(BaseModel):
     access_token: str = Field(..., description="Access token")
     token_type: str = "Bearer"
-

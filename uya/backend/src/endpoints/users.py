@@ -95,42 +95,62 @@ async def edit_profile(
             , detail="Access token is invalid."
         )
 
-    user_exists_query = select(UsersORM).filter_by(username=payload.username)
-    user_exists_ex = await session.execute(user_exists_query)
-    user_exists = user_exists_ex.scalar_one_or_none()
+    update_data: dict[str, str] = {}
 
-    if user_exists:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT
-            , detail="User with that username already exists."
-        )
+    decoded_token = decode_token(token=access_token)
+    user_query = await session.execute(
+        select(UsersORM).filter_by(id=decoded_token.get("id"))
+    )
+    user = user_query.scalar_one_or_none()
 
-    decoded_data = decode_token(token=access_token)
-    query = select(UsersORM).filter_by(username=decoded_data.get("username"))
-    select_user_ex = await session.execute(query)
-    user = select_user_ex.scalar_one()
-
-    if not verify_pwd(pwd=payload.old_password, hashed_pwd=user.password):
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Incorrect old password. Cannot change it to new."
+            , detail="Access token is invalid."
         )
 
-    to_update_in_users = update(UsersORM).values(
-        username=payload.username
-        , email=payload.email
-        , password=hash_pwd(payload.new_password)
-    ).filter_by(id=decoded_data.get("id"))
+    # Checking did user provided new username
+    if payload.username and payload.username != user.username:
+        # Checking is user with this username exists
+        get_user_query = await session.execute(select(UsersORM).filter_by(username=payload.username))
+        get_user = get_user_query.scalar_one_or_none()
 
-    await session.execute(to_update_in_users)
-    await session.commit()
+        if get_user:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT
+                , detail="User with that username already exists."
+            )
+
+        update_data.update({"username": payload.username})
+
+    if payload.email:
+        update_data.update({"email": payload.email})
+
+    if payload.new_password:
+        if not payload.old_password or not verify_pwd(payload.old_password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED
+                , detail="Incorrect password."
+            )
+
+        update_data["password"] = hash_pwd(payload.new_password)
+
+    if update_data:
+        await session.execute(
+            update(UsersORM).values(**update_data).filter_by(id=user.id)
+        )
+        await session.commit()
 
     response.delete_cookie(
         key = "access_token"
         , domain = None
     )
 
-    token = create_token(data={"username": payload.username, "email": payload.email,"id": user.id})
+    token = create_token(data={
+        "username": update_data.get("username", user.username)
+        , "email": update_data.get("email", user.email)
+        , "id": user.id
+    })
 
     response.set_cookie(
         key="access_token"
