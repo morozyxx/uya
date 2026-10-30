@@ -89,25 +89,38 @@ async def edit_profile(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    if not access_token:
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED
+    #         , detail="Access token is invalid."
+    #     )
+
+    try:
+        decoded_data = decode_token(token=access_token)
+    except jwt.exceptions.ExpiredSignatureError:
+        response.delete_cookie(
+            key = "access_token", domain = None
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Access token is invalid."
+            , detail="Token has expired."
+        )
+    except jwt.InvalidTokenError:
+        response.delete_cookie(
+            key = "access_token"
+            , domain = None
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+            , detail="Invalid token."
         )
 
     update_data: dict[str, str] = {}
 
-    decoded_token = decode_token(token=access_token)
     user_query = await session.execute(
-        select(UsersORM).filter_by(id=decoded_token.get("id"))
+        select(UsersORM).filter_by(id=decoded_data.get("id"))
     )
     user = user_query.scalar_one_or_none()
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Access token is invalid."
-        )
 
     # Checking did user provided new username
     if payload.username and payload.username != user.username:
@@ -164,16 +177,36 @@ async def edit_profile(
 
 @router.get("/me", response_model=AuthResponseSchema)
 async def me(
-        access_token: str | None = Cookie(default=None)
+        response: Response
+        , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    if not access_token:
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED
+    #         , detail="Access token is invalid."
+    #     )
+
+    try:
+        decoded_data = decode_token(token=access_token)
+    except jwt.exceptions.ExpiredSignatureError:
+        response.delete_cookie(
+            key = "access_token", domain = None
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Access token is invalid."
+            , detail="Token has expired."
+        )
+    except jwt.InvalidTokenError:
+        response.delete_cookie(
+            key = "access_token"
+            , domain = None
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+            , detail="Invalid token."
         )
 
-    decoded_data = decode_token(token=access_token)
     query = select(UsersORM).filter_by(username=decoded_data.get("username"))
     ex = await session.execute(query)
     res = ex.scalar_one_or_none()
@@ -238,13 +271,32 @@ async def delete_profile(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    if not access_token:
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED
+    #         , detail="Access token is invalid."
+    #     )
+
+    try:
+        decoded_data = decode_token(token=access_token)
+    except jwt.exceptions.ExpiredSignatureError:
+        response.delete_cookie(
+            key = "access_token", domain = None
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Access token is invalid."
+            , detail="Token has expired."
+        )
+    except jwt.InvalidTokenError:
+        response.delete_cookie(
+            key = "access_token"
+            , domain = None
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+            , detail="Invalid token."
         )
 
-    decoded_data = decode_token(token=access_token)
     user_id = decoded_data.get("id")
 
     delete_posts_query = delete(PostsORM).filter_by(user_id=user_id)
