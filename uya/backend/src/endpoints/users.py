@@ -8,7 +8,7 @@ from src.schemas.users import SignUpSchema, SignInSchema, AuthResponseSchema, Ed
 from src.schemas.posts import PostSchema
 from src.db import get_session
 from src.models.users import UsersORM
-from src.helper import hash_pwd, verify_pwd, create_token, decode_token
+from src.helper import hash_pwd, verify_pwd, create_token, decode_token, check_jwt_errors
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -95,25 +95,7 @@ async def edit_profile(
     #         , detail="Access token is invalid."
     #     )
 
-    try:
-        decoded_data = decode_token(token=access_token)
-    except jwt.exceptions.ExpiredSignatureError:
-        response.delete_cookie(
-            key = "access_token", domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Token has expired."
-        )
-    except jwt.InvalidTokenError:
-        response.delete_cookie(
-            key = "access_token"
-            , domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Invalid token."
-        )
+    decoded_data = check_jwt_errors(access_token=access_token)
 
     update_data: dict[str, str] = {}
 
@@ -187,25 +169,7 @@ async def me(
     #         , detail="Access token is invalid."
     #     )
 
-    try:
-        decoded_data = decode_token(token=access_token)
-    except jwt.exceptions.ExpiredSignatureError:
-        response.delete_cookie(
-            key = "access_token", domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Token has expired."
-        )
-    except jwt.InvalidTokenError:
-        response.delete_cookie(
-            key = "access_token"
-            , domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Invalid token."
-        )
+    decoded_data = check_jwt_errors(access_token=access_token)
 
     query = select(UsersORM).filter_by(username=decoded_data.get("username"))
     ex = await session.execute(query)
@@ -277,25 +241,7 @@ async def delete_profile(
     #         , detail="Access token is invalid."
     #     )
 
-    try:
-        decoded_data = decode_token(token=access_token)
-    except jwt.exceptions.ExpiredSignatureError:
-        response.delete_cookie(
-            key = "access_token", domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Token has expired."
-        )
-    except jwt.InvalidTokenError:
-        response.delete_cookie(
-            key = "access_token"
-            , domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Invalid token."
-        )
+    decoded_data = check_jwt_errors(access_token=access_token)
 
     user_id = decoded_data.get("id")
 

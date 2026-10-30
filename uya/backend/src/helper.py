@@ -44,3 +44,28 @@ def decode_token(
 
     return decoded_data if decoded_data else None
 
+
+def check_jwt_errors(
+        access_token: str
+) -> dict[str, str] | None:
+    try:
+        decoded_data = decode_token(token=access_token)
+        return decoded_data
+    except jwt.exceptions.ExpiredSignatureError:
+        response.delete_cookie(
+            key = "access_token", domain = None
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+            , detail="Token has expired."
+        )
+    except jwt.InvalidTokenError:
+        response.delete_cookie(
+            key = "access_token"
+            , domain = None
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+            , detail="Invalid token."
+        )
+

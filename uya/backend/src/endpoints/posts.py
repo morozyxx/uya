@@ -7,7 +7,7 @@ from src.models.posts import PostsORM
 from src.models.users import UsersORM
 from src.schemas.posts import PostSchema, NewPostSchema, DeletePostSchema, AllPostsResponseSchema
 from src.db import get_session
-from src.helper import decode_token
+from src.helper import decode_token, check_jwt_errors
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -50,25 +50,7 @@ async def new_post(
     #         , detail="Could not validate credentials",
     #     )
 
-    try:
-        decoded_data = decode_token(token=access_token)
-    except jwt.exceptions.ExpiredSignatureError:
-        response.delete_cookie(
-            key = "access_token", domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Token has expired."
-        )
-    except jwt.InvalidTokenError:
-        response.delete_cookie(
-            key = "access_token"
-            , domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Invalid token."
-        )
+    decoded_data = check_jwt_errors(access_token=access_token)
 
     user_id = decoded_data.get("id")
 
@@ -98,25 +80,7 @@ async def get_all_user_posts(
     #         , detail="Could not validate credentials",
     #     )
 
-    try:
-        decoded_data = decode_token(token=access_token)
-    except jwt.exceptions.ExpiredSignatureError:
-        response.delete_cookie(
-            key = "access_token", domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Token has expired."
-        )
-    except jwt.InvalidTokenError:
-        response.delete_cookie(
-            key = "access_token"
-            , domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Invalid token."
-        )
+    decoded_data = check_jwt_errors(access_token=access_token)
 
     user_id = decoded_data.get("id")
 
@@ -150,25 +114,7 @@ async def edit_post(
     #         , detail="Could not validate credentials",
     #     )
 
-    try:
-        decoded_data = decode_token(token=access_token)
-    except jwt.exceptions.ExpiredSignatureError:
-        response.delete_cookie(
-            key = "access_token", domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Token has expired."
-        )
-    except jwt.InvalidTokenError:
-        response.delete_cookie(
-            key = "access_token"
-            , domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Invalid token."
-        )
+    decoded_data = check_jwt_errors(access_token=access_token)
 
     user_id = decoded_data.get("id")
 
@@ -198,25 +144,7 @@ async def delete_post(
     #         , detail="Could not validate credentials",
     #     )
 
-    try:
-        decoded_data = decode_token(token=access_token)
-    except jwt.exceptions.ExpiredSignatureError:
-        response.delete_cookie(
-            key = "access_token", domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Token has expired."
-        )
-    except jwt.InvalidTokenError:
-        response.delete_cookie(
-            key = "access_token"
-            , domain = None
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Invalid token."
-        )
+    decoded_data = check_jwt_errors(access_token=access_token)
 
     user_id = decoded_data.get("id")
 
