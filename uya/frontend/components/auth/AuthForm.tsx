@@ -160,8 +160,15 @@ export default function AuthForm({ mode }: AuthFormProps) {
                                 value={username}
                                 onChange={(event) => setUsername(event.target.value)}
                                 placeholder="Your username"
+                                pattern={isSignUp ? "[A-Za-z0-9]+" : undefined}
+                                title={isSignUp ? "Use English letters and numbers only." : undefined}
                                 required
                             />
+                            {isSignUp && (
+                                <span className="block text-[11px] text-slate-400">
+                                    Use English letters and numbers only.
+                                </span>
+                            )}
                         </label>
 
                         {isSignUp && (

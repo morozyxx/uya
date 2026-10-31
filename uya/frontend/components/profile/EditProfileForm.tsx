@@ -112,7 +112,7 @@ export default function EditProfileForm() {
                 old_password?: string;
                 new_password?: string;
             } = {};
-            const nextUsername = username.trim();
+            const nextUsername = username;
             const nextEmail = email.trim();
 
             if (nextUsername && nextUsername !== initialUsername) {
@@ -252,7 +252,12 @@ export default function EditProfileForm() {
                                     type="text"
                                     value={username}
                                     onChange={(event) => setUsername(event.target.value)}
+                                    pattern={username !== initialUsername ? "[A-Za-z0-9]+" : undefined}
+                                    title="Use English letters and numbers only."
                                 />
+                                <span className="block text-[11px] text-slate-400">
+                                    Use English letters and numbers only.
+                                </span>
                             </label>
 
                             <label className="block space-y-2">

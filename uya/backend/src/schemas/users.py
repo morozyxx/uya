@@ -4,7 +4,9 @@ from pydantic import BaseModel, EmailStr, Field
 from src.schemas.posts import PostSchema
 
 class SignUpSchema(BaseModel):
-    username: str = Field(..., description="User`s username")
+    username: str = Field(
+        ..., description="User`s username", pattern=r"^[A-Za-z0-9]+$"
+    )
     password: str = Field(..., description="User`s password")
     email: EmailStr = Field(..., description="User`s email")
 
@@ -13,7 +15,7 @@ class SignInSchema(BaseModel):
     password: str = Field(..., description="User`s password")
 
 class EditProfileSchema(BaseModel):
-    username: str | None = None
+    username: str | None = Field(default=None, pattern=r"^[A-Za-z0-9]+$")
     old_password: str | None = None
     new_password: str | None = None
     email: EmailStr | None = None

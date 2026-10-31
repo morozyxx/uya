@@ -89,11 +89,6 @@ async def edit_profile(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    # if not access_token:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED
-    #         , detail="Access token is invalid."
-    #     )
 
     decoded_data = check_jwt_errors(access_token=access_token)
 
@@ -163,11 +158,6 @@ async def me(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    # if not access_token:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED
-    #         , detail="Access token is invalid."
-    #     )
 
     decoded_data = check_jwt_errors(access_token=access_token)
 
@@ -235,11 +225,6 @@ async def delete_profile(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    # if not access_token:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED
-    #         , detail="Access token is invalid."
-    #     )
 
     decoded_data = check_jwt_errors(access_token=access_token)
 
