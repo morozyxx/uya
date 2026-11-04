@@ -4,11 +4,11 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.posts import PostsORM
-from src.schemas.users import SignUpSchema, SingInSchema, AuthResponseSchema, EditProfileSchema, UserInfoSchema, UserInfoResponseSchema
+from src.schemas.users import SignUpSchema, SignInSchema, AuthResponseSchema, EditProfileSchema, UserProfileSchema, UserProfileResponseSchema
 from src.schemas.posts import PostSchema
 from src.db import get_session
 from src.models.users import UsersORM
-from src.helper import hash_pwd, verify_pwd, create_token, decode_token
+from src.helper import hash_pwd, verify_pwd, create_token, decode_token, check_jwt_errors
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -43,7 +43,7 @@ async def sing_up(
 @router.post("/sign_in")
 async def sing_in(
         response: Response
-        , payload: SingnInSchema
+        , payload: SignInSchema
         , session: AsyncSession = Depends(get_session)
 ):
     query = select(UsersORM).filter_by(username=payload.username)
@@ -89,48 +89,63 @@ async def edit_profile(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    if not access_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Access token is invalid."
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED
+    #         , detail="Access token is invalid."
+    #     )
+
+    decoded_data = check_jwt_errors(access_token=access_token)
+
+    update_data: dict[str, str] = {}
+
+    user_query = await session.execute(
+        select(UsersORM).filter_by(id=decoded_data.get("id"))
+    )
+    user = user_query.scalar_one_or_none()
+
+    # Checking did user provided new username
+    if payload.username and payload.username != user.username:
+        # Checking is user with this username exists
+        get_user_query = await session.execute(select(UsersORM).filter_by(username=payload.username))
+        get_user = get_user_query.scalar_one_or_none()
+
+        if get_user:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT
+                , detail="User with that username already exists."
+            )
+
+        update_data.update({"username": payload.username})
+
+    if payload.email:
+        update_data.update({"email": payload.email})
+
+    if payload.new_password:
+        if not payload.old_password or not verify_pwd(payload.old_password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED
+                , detail="Incorrect password."
+            )
+
+        update_data["password"] = hash_pwd(payload.new_password)
+
+    if update_data:
+        await session.execute(
+            update(UsersORM).values(**update_data).filter_by(id=user.id)
         )
-
-    user_exists_query = select(UsersORM).filter_by(username=payload.username)
-    user_exists_ex = await session.execute(user_exists_query)
-    user_exists = user_exists_ex.scalar_one_or_none()
-
-    if user_exists:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT
-            , detail="User with that username already exists."
-        )
-
-    decoded_data = decode_token(token=access_token)
-    query = select(UsersORM).filter_by(username=decoded_data.get("username"))
-    select_user_ex = await session.execute(query)
-    user = select_user_ex.scalar_one()
-
-    if not verify_pwd(pwd=payload.old_password, hashed_pwd=user.password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Incorrect old password. Cannot change it to new."
-        )
-
-    to_update_in_users = update(UsersORM).values(
-        username=payload.username
-        , email=payload.email
-        , password=hash_pwd(payload.new_password)
-    ).filter_by(id=decoded_data.get("id"))
-
-    await session.execute(to_update_in_users)
-    await session.commit()
+        await session.commit()
 
     response.delete_cookie(
         key = "access_token"
         , domain = None
     )
 
-    token = create_token(data={"username": payload.username, "email": payload.email,"id": user.id})
+    token = create_token(data={
+        "username": update_data.get("username", user.username)
+        , "email": update_data.get("email", user.email)
+        , "id": user.id
+    })
 
     response.set_cookie(
         key="access_token"
@@ -144,16 +159,18 @@ async def edit_profile(
 
 @router.get("/me", response_model=AuthResponseSchema)
 async def me(
-        access_token: str | None = Cookie(default=None)
+        response: Response
+        , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    if not access_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Access token is invalid."
-        )
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED
+    #         , detail="Access token is invalid."
+    #     )
 
-    decoded_data = decode_token(token=access_token)
+    decoded_data = check_jwt_errors(access_token=access_token)
+
     query = select(UsersORM).filter_by(username=decoded_data.get("username"))
     ex = await session.execute(query)
     res = ex.scalar_one_or_none()
@@ -165,9 +182,9 @@ async def me(
     })
 
 
-@router.post("/user_profile",  response_model=UserInfoResponseSchema)
+@router.post("/user_profile",  response_model=UserProfileResponseSchema)
 async def get_user_info(
-        payload: UserInfoSchema
+        payload: UserProfileSchema
         , session: AsyncSession = Depends(get_session)
 ):
     # Searching user in db
@@ -182,9 +199,9 @@ async def get_user_info(
         )
 
     # Searching given user posts
-    search_posts_query = select(PostsORM).filter_by(user_id=user.id)
+    search_posts_query = select(PostsORM).filter_by(user_id=user.id).order_by(PostsORM.id.desc())
     search_posts_ex = await session.execute(search_posts_query)
-    db_posts = search_posts_ex.scalar_one_or_none()
+    db_posts = search_posts_ex.scalars().all()
 
     posts = []
     for post in db_posts:
@@ -198,7 +215,7 @@ async def get_user_info(
         }))
 
     # Return validated result
-    return UserInfoResponseSchema.model_validate({
+    return UserProfileResponseSchema.model_validate({
         "username": user.username
         , "posts": posts
     })
@@ -218,13 +235,14 @@ async def delete_profile(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    if not access_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Access token is invalid."
-        )
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED
+    #         , detail="Access token is invalid."
+    #     )
 
-    decoded_data = decode_token(token=access_token)
+    decoded_data = check_jwt_errors(access_token=access_token)
+
     user_id = decoded_data.get("id")
 
     delete_posts_query = delete(PostsORM).filter_by(user_id=user_id)
