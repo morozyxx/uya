@@ -17,6 +17,10 @@ type PublicPost = {
     username: string;
 };
 
+function normalizePlatform(platform: string) {
+    return platform.trim().toLocaleLowerCase();
+}
+
 function isPublicPost(value: unknown): value is PublicPost {
     if (typeof value !== "object" || value === null) return false;
     const post = value as Record<string, unknown>;
@@ -94,17 +98,27 @@ export default function Home() {
         return () => controller.abort();
     }, []);
 
-    const platforms = useMemo(
-        () => ["All", ...new Set(posts.map((post) => post.platform))],
-        [posts],
-    );
+    const platforms = useMemo(() => {
+        const uniquePlatforms = new Map<string, string>();
+
+        for (const post of posts) {
+            const label = post.platform.trim();
+            const key = normalizePlatform(label);
+            if (key && key !== "all" && !uniquePlatforms.has(key)) {
+                uniquePlatforms.set(key, label);
+            }
+        }
+
+        return ["All", ...uniquePlatforms.values()];
+    }, [posts]);
 
     const filteredPosts = useMemo(() => {
         const query = search.trim().toLowerCase();
 
         return posts.filter((post) => {
             const matchesPlatform =
-                platformFilter === "All" || post.platform === platformFilter;
+                platformFilter === "All" ||
+                normalizePlatform(post.platform) === normalizePlatform(platformFilter);
             const matchesSearch =
                 query.length === 0 ||
                 `${post.title} ${post.description} ${post.username} ${post.platform}`

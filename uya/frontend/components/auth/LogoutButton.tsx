@@ -3,7 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 
-export default function LogoutButton() {
+type LogoutButtonProps = {
+    showLabel?: boolean;
+};
+
+export default function LogoutButton({ showLabel = false }: LogoutButtonProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [error, setError] = useState("");
 
@@ -33,7 +37,7 @@ export default function LogoutButton() {
     return (
         <div className="relative">
             <button
-                className="top-nav-control inline-grid cursor-pointer disabled:cursor-wait"
+                className={`${showLabel ? "mobile-logout-button" : "top-nav-control inline-grid"} cursor-pointer disabled:cursor-wait`}
                 type="button"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
@@ -41,6 +45,7 @@ export default function LogoutButton() {
                 title={isLoggingOut ? "Signing out" : "Logout"}
             >
                 <Image className="h-5 w-5" src="/logout-icon.svg" alt="" />
+                {showLabel && <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>}
             </button>
             {error && (
                 <span

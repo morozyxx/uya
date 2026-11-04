@@ -27,6 +27,7 @@ const popularPlatforms = [
     "Spotify",
     "Patreon",
     "Substack",
+    "uya-highlights",
     "Other",
 ] as const;
 

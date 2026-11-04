@@ -7,7 +7,7 @@ from src.models.posts import PostsORM
 from src.models.users import UsersORM
 from src.schemas.posts import PostSchema, NewPostSchema, DeletePostSchema, AllPostsResponseSchema
 from src.db import get_session
-from src.helper import decode_token
+from src.helper import decode_token, check_jwt_errors
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -44,14 +44,15 @@ async def new_post(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ) -> Response:
-    if not access_token:
-        raise HTTPException(
-            status_code=status.HTTP4_401_UNAUTHORIZED
-            , detail="Could not validate credentials",
-        )
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP4_401_UNAUTHORIZED
+    #         , detail="Could not validate credentials",
+    #     )
 
-    decoded_token = decode_token(token=access_token)
-    user_id = decoded_token.get("id")
+    decoded_data = check_jwt_errors(access_token=access_token)
+
+    user_id = decoded_data.get("id")
 
     post = PostsORM(
         title=payload.title
@@ -73,14 +74,15 @@ async def get_all_user_posts(
         access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    if not access_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Could not validate credentials",
-        )
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED
+    #         , detail="Could not validate credentials",
+    #     )
 
-    decoded_token = decode_token(token=access_token)
-    user_id = decoded_token.get("id")
+    decoded_data = check_jwt_errors(access_token=access_token)
+
+    user_id = decoded_data.get("id")
 
     query = select(PostsORM).filter_by(user_id=user_id).order_by(PostsORM.id.desc())
     executed = await session.execute(query)
@@ -106,14 +108,15 @@ async def edit_post(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ) -> Response:
-    if not access_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Could not validate credentials",
-        )
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED
+    #         , detail="Could not validate credentials",
+    #     )
 
-    decoded_token = decode_token(token=access_token)
-    user_id = decoded_token.get("id")
+    decoded_data = check_jwt_errors(access_token=access_token)
+
+    user_id = decoded_data.get("id")
 
     update_post = update(PostsORM).values(
         title=payload.title
@@ -135,14 +138,15 @@ async def delete_post(
         , access_token: str | None = Cookie(default=None)
         , session: AsyncSession = Depends(get_session)
 ):
-    if not access_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-            , detail="Could not validate credentials",
-        )
+    # if not access_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED
+    #         , detail="Could not validate credentials",
+    #     )
 
-    decoded_token = decode_token(token=access_token)
-    user_id = decoded_token.get("id")
+    decoded_data = check_jwt_errors(access_token=access_token)
+
+    user_id = decoded_data.get("id")
 
     delete_query = delete(PostsORM).filter_by(id=payload.id, user_id=user_id)
 
